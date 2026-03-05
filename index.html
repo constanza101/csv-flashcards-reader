@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🃏 Flashcards 8-Bit</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
         * { box-sizing: border-box; }
         body { 
-            font-family: 'Press Start 2P', monospace; 
+            font-family: 'Orbitron', monospace; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             min-height: 100vh; background: #70C5CE; 
             margin: 0; padding: 20px; image-rendering: pixelated;
@@ -18,20 +18,20 @@
         h1 { 
             color: #E6E4D9; text-shadow: 3px 3px 0px #0F380F;
             margin-bottom: 24px; font-size: 1.6em; line-height: 1.2; letter-spacing: 2px;
-            image-rendering: pixelated;
+            image-rendering: pixelated; font-weight: 900;
         }
         input[type="file"] { 
             background: #E6E4D9; border: 4px solid #D00D0D;
             color: #0F380F; padding: 14px 24px; border-radius: 0; cursor: pointer; 
-            font-family: inherit; font-size: 0.9em; text-transform: uppercase;
+            font-family: inherit; font-size: 0.9em; ; font-weight: 700;
             transition: all 0.2s; margin-bottom: 20px; box-shadow: 4px 4px 0px #8B0000;
         }
         input[type="file"]:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #8B0000; }
         input[type="file"]:active { transform: translate(0, 0); box-shadow: 2px 2px 0px #8B0000; }
         #progress { 
             background: #E6E4D9; border: 4px solid #0F380F; color: #0F380F; 
-            font-weight: 400; padding: 14px 20px; border-radius: 0; margin-bottom: 24px; 
-            font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;
+            font-weight: 700; padding: 14px 20px; border-radius: 0; margin-bottom: 24px; 
+            font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px;
             box-shadow: 4px 4px 0px #387A38; text-shadow: 1px 1px 0px white;
         }
         .flashcard-wrapper { perspective: 1000px; height: 280px; margin-bottom: 24px; }
@@ -50,14 +50,14 @@
         .front { box-shadow: 8px 8px 0px #D00D0D; }
         .back { box-shadow: 8px 8px 0px #0F380F; transform: rotateY(180deg); }
         .question, .answer { 
-            font-size: 1.1em; margin: 8px 0; text-align: center; line-height: 1.3; 
-            font-weight: 400; letter-spacing: 1px; image-rendering: pixelated;
+            font-size: 1.25em; margin: 8px 0; text-align: center; line-height: 1.3; 
+            font-weight: 700; letter-spacing: 0.5px; image-rendering: pixelated;
         }
         .question { color: #0F380F; text-transform: uppercase; }
-        .answer { color: #D00D0D; font-size: 1.15em; border-top: 3px solid #D00D0D; padding-top: 12px; }
+        .answer { color: #D00D0D; font-size: 1.2em; border-top: 3px solid #D00D0D; padding-top: 12px; }
         #flipBtn { 
             background: #D00D0D; color: #E6E4D9; border: 4px solid #8B0000; 
-            padding: 16px 28px; font-family: inherit; font-size: 0.85em; 
+            padding: 16px 28px; font-family: inherit; font-size: 0.8em; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1px; cursor: pointer; 
             box-shadow: 6px 6px 0px #8B0000; transition: all 0.2s; margin: 0;
         }
@@ -66,7 +66,7 @@
         .nav { margin-top: 20px; display: flex; gap: 16px; justify-content: center; }
         .nav button { 
             background: #E6E4D9; color: #0F380F; border: 3px solid #387A38; 
-            padding: 12px 20px; font-family: inherit; font-size: 0.8em; 
+            padding: 12px 20px; font-family: inherit; font-size: 0.75em; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1px; cursor: pointer; 
             box-shadow: 4px 4px 0px #387A38; transition: all 0.2s;
         }
@@ -74,7 +74,7 @@
         .nav button:active { transform: translate(0, 0); box-shadow: 2px 2px 0px #387A38; }
         @media (max-width: 480px) { 
             .side { padding: 24px 16px; } 
-            .question, .answer { font-size: 1em; } 
+            .question, .answer { font-size: 1.1em; } 
             .nav { flex-direction: column; gap: 12px; }
         }
     </style>
