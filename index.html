@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🃏 Flashcards 8-Bit</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Press Start 2P', monospace; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; background: #70C5CE; 
+            margin: 0; padding: 20px; image-rendering: pixelated;
+        }
+        .container { text-align: center; max-width: 500px; width: 100%; }
+        h1 { 
+            color: #E6E4D9; text-shadow: 3px 3px 0px #0F380F;
+            margin-bottom: 24px; font-size: 1.6em; line-height: 1.2; letter-spacing: 2px;
+            image-rendering: pixelated;
+        }
+        input[type="file"] { 
+            background: #E6E4D9; border: 4px solid #D00D0D;
+            color: #0F380F; padding: 14px 24px; border-radius: 0; cursor: pointer; 
+            font-family: inherit; font-size: 0.9em; text-transform: uppercase;
+            transition: all 0.2s; margin-bottom: 20px; box-shadow: 4px 4px 0px #8B0000;
+        }
+        input[type="file"]:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #8B0000; }
+        input[type="file"]:active { transform: translate(0, 0); box-shadow: 2px 2px 0px #8B0000; }
+        #progress { 
+            background: #E6E4D9; border: 4px solid #0F380F; color: #0F380F; 
+            font-weight: 400; padding: 14px 20px; border-radius: 0; margin-bottom: 24px; 
+            font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 4px 4px 0px #387A38; text-shadow: 1px 1px 0px white;
+        }
+        .flashcard-wrapper { perspective: 1000px; height: 280px; margin-bottom: 24px; }
+        .flashcard { 
+            position: relative; width: 100%; height: 100%; transition: transform 0.4s step-end; 
+            transform-style: preserve-3d; 
+        }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .side { 
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+            background: #E6E4D9; border: 6px solid #0F380F; border-radius: 0; 
+            box-shadow: 8px 8px 0px #387A38; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; padding: 30px 20px; 
+            image-rendering: pixelated;
+        }
+        .front { box-shadow: 8px 8px 0px #D00D0D; }
+        .back { box-shadow: 8px 8px 0px #0F380F; transform: rotateY(180deg); }
+        .question, .answer { 
+            font-size: 1.1em; margin: 8px 0; text-align: center; line-height: 1.3; 
+            font-weight: 400; letter-spacing: 1px; image-rendering: pixelated;
+        }
+        .question { color: #0F380F; text-transform: uppercase; }
+        .answer { color: #D00D0D; font-size: 1.15em; border-top: 3px solid #D00D0D; padding-top: 12px; }
+        #flipBtn { 
+            background: #D00D0D; color: #E6E4D9; border: 4px solid #8B0000; 
+            padding: 16px 28px; font-family: inherit; font-size: 0.85em; 
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; 
+            box-shadow: 6px 6px 0px #8B0000; transition: all 0.2s; margin: 0;
+        }
+        #flipBtn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px #8B0000; }
+        #flipBtn:active { transform: translate(0, 0); box-shadow: 3px 3px 0px #8B0000; }
+        .nav { margin-top: 20px; display: flex; gap: 16px; justify-content: center; }
+        .nav button { 
+            background: #E6E4D9; color: #0F380F; border: 3px solid #387A38; 
+            padding: 12px 20px; font-family: inherit; font-size: 0.8em; 
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; 
+            box-shadow: 4px 4px 0px #387A38; transition: all 0.2s;
+        }
+        .nav button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #387A38; }
+        .nav button:active { transform: translate(0, 0); box-shadow: 2px 2px 0px #387A38; }
+        @media (max-width: 480px) { 
+            .side { padding: 24px 16px; } 
+            .question, .answer { font-size: 1em; } 
+            .nav { flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🃏 FLASHCARDS</h1>
+        <input type="file" id="csvFile" accept=".csv" />
+        <div id="progress">Carga tu archivo CSV</div>
+        <div id="flashcardWrapper" class="flashcard-wrapper" style="display: none;">
+            <div id="flashcard" class="flashcard">
+                <div class="side front">
+                    <p class="question" id="question"></p>
+                </div>
+                <div class="side back">
+                    <p class="answer" id="answer"></p>
+                </div>
+            </div>
+        </div>
+        <button id="flipBtn" style="display: none;">👀 VER RESPUESTA</button>
+        <div class="nav" id="nav" style="display: none;">
+            <button id="prevBtn">← ANTES</button>
+            <button id="nextBtn">SIGTE →</button>
+        </div>
+    </div>
+
+    <script>
+        let flashcards = [];
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        const csvFile = document.getElementById('csvFile');
+        const flashcardWrapper = document.getElementById('flashcardWrapper');
+        const flashcard = document.getElementById('flashcard');
+        const flipBtn = document.getElementById('flipBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progress = document.getElementById('progress');
+        const questionEl = document.getElementById('question');
+        const answerEl = document.getElementById('answer');
+        const nav = document.getElementById('nav');
+
+        csvFile.addEventListener('change', handleFile);
+        flipBtn.addEventListener('click', flipCard);
+        prevBtn.addEventListener('click', () => changeCard(-1));
+        nextBtn.addEventListener('click', () => changeCard(1));
+
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                parseCSV(ev.target.result);
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function parseCSV(text) {
+            flashcards = [];
+            const lines = text.split(/\r?\n/).filter(line => line.trim());
+            lines.forEach((line, index) => {
+                if (index === 0 && line.includes('¿Cómo')) return;
+                const parts = line.split(',');
+                if (parts.length >= 2) {
+                    const pregunta = parts[0].trim().replace(/^["']|["']$/g, '');
+                    const respuesta = parts.slice(1).join(',').trim().replace(/^["']|["']$/g, '');
+                    if (pregunta && respuesta) {
+                        flashcards.push({ pregunta, respuesta });
+                    }
+                }
+            });
+            if (flashcards.length > 0) {
+                currentIndex = 0;
+                showCard();
+                flashcardWrapper.style.display = 'block';
+                flipBtn.style.display = 'block';
+                nav.style.display = 'flex';
+                progress.textContent = `${flashcards.length} tarjetas listas!`;
+            } else {
+                alert('No se encontraron tarjetas válidas en el CSV.');
+            }
+        }
+
+        function showCard() {
+            questionEl.textContent = flashcards[currentIndex].pregunta;
+            answerEl.textContent = flashcards[currentIndex].respuesta;
+            isFlipped = false;
+            flashcard.classList.remove('flipped');
+            flipBtn.textContent = '👀 VER RESPUESTA';
+            progress.textContent = `Tarjeta ${currentIndex + 1} / ${flashcards.length}`;
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            flashcard.classList.toggle('flipped');
+            flipBtn.textContent = isFlipped ? '🙈 VER PREGUNTA' : '👀 VER RESPUESTA';
+        }
+
+        function changeCard(direction) {
+            currentIndex = (currentIndex + direction + flashcards.length) % flashcards.length;
+            showCard();
+        }
+    </script>
+</body>
+</html>
